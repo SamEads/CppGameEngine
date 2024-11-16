@@ -78,10 +78,8 @@ struct Mat4
         vz.y *= ilength;
         vz.z *= ilength;
 
-        // Vector3CrossProduct(up, vz)
         Vec3<double> vx = { up.y * vz.z - up.z * vz.y, up.z * vz.x - up.x * vz.z, up.x * vz.y - up.y * vz.x };
 
-        // Vector3Normalize(x)
         v = vx;
         length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
         if (length == 0.0f) length = 1.0f;
@@ -90,7 +88,6 @@ struct Mat4
         vx.y *= ilength;
         vx.z *= ilength;
 
-        // Vector3CrossProduct(vz, vx)
         Vec3<double> vy = { vz.y * vx.z - vz.z * vx.y, vz.z * vx.x - vz.x * vx.z, vz.x * vx.y - vz.y * vx.x };
 
         result.m0 = vx.x;

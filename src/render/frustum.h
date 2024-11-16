@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <array>
 #include "../utility/vec.h"
 #include "../physics/aabb.h"
 
@@ -17,7 +17,7 @@ private:
         LEFT,
         COUNT
 	};
-	std::map<Planes, Vec4<double>> m_planes;
+	std::array<Vec4<double>, static_cast<size_t>(Planes::COUNT)> m_planes { 0.0 };
 
 public:
     Frustum(double x, double y, double z);

@@ -18,6 +18,7 @@ void Cam3D::beginDrawing(const Vec2<int> screenSize, float farPlane)
     rlDrawRenderBatchActive();
 
     rlMatrixMode(RL_PROJECTION);
+
     rlPushMatrix();
     rlLoadIdentity();
 
@@ -176,16 +177,19 @@ namespace CameraMatrix
 void Cam3D::rotate(float angle, float x, float y, float z)
 {
     rlRotatef(angle, x, y, z);
+    CameraMatrix::rotate(angle, x, y, z);
 }
 
 void Cam3D::translate(float x, float y, float z)
 {
     rlTranslatef(x, y, z);
+    CameraMatrix::translate(x, y, z);
 }
 
 void Cam3D::scale(float x, float y, float z)
 {
     rlScalef(x, y, z);
+    CameraMatrix::scale(x, y, z);
 }
 
 void Cam3D::clearDepthBuffer()

@@ -147,6 +147,7 @@
     <ClInclude Include="src\io\filesystem.h" />
     <ClInclude Include="src\memory\pointers.h" />
     <ClInclude Include="src\model\cubemesh.h" />
+    <ClInclude Include="src\physics\aabb.h" />
     <ClInclude Include="src\render\cam3d.h" />
     <ClInclude Include="src\render\frustum.h" />
     <ClInclude Include="src\render\staterenderer.h" />
