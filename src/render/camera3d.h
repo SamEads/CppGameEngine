@@ -26,7 +26,7 @@ private:
 public:
 	Camera3D(Window* window, float fov, int perspective = 0);
 
-	void beginDrawing(const Vec2<int> screenSize, float farPlane);
+	void beginDrawing(const Vec2<int> screenSize, float farPlane = 1024.0f);
 
 	void endDrawing();
 
