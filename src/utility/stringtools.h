@@ -37,6 +37,16 @@ namespace StringTools
 		return str;
 	}
 
+	inline std::string upper(std::string str)
+	{
+		if (str.empty())
+		{
+			return str;
+		}
+		std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+		return str;
+	}
+
 	inline int parseInt(const std::string& str)
 	{
 		if (str.empty())

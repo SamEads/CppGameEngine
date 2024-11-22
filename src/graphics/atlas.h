@@ -1,8 +1,9 @@
 #pragma once
 #include "../io/filesystem.h"
-#include "tex2d.h"
+#include "texture.h"
 #include <unordered_map>
 #include "../utility/col.h"
+#include "../utility/vec.h"
 
 class Atlas
 {
@@ -13,7 +14,7 @@ public:
         Vec2<int> position;
         Vec2<int> size;
         Vec2<int> atlasSize;
-        Img2D image;
+        Image image;
         Col4<float> avgColor;
 
         inline double getU(double v) const
@@ -84,7 +85,7 @@ private:
     // Texture for atlas.
     // Once an atlas is generated, this is heap memory that needs to be deleted!
     // The destructor takes care of this, so no reassigning.
-    Tex2D m_texture;
+    Texture m_texture;
 
     // List of references to icons currently being used in this atlas.
     std::unordered_map<std::string, Icon> m_icons;
@@ -125,7 +126,7 @@ public:
         return m_atlasHeight;
     }
 
-    Tex2D& getTexture()
+    Texture& getTexture()
     {
         return m_texture;
     }

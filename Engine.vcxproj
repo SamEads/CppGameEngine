@@ -122,7 +122,8 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;AL_LIBTYPE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)deps\lua\include;$(SolutionDir)deps\AL\include;$(SolutionDir)deps\raylib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\lua\include;$(SolutionDir)deps\AL\include;$(ProjectDir)external\stb;$(ProjectDir)external\glfw\include;$(ProjectDir)external\glm;$(ProjectDir)external\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,47 +135,49 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="external\glad.h" />
     <ClInclude Include="external\sol.hpp" />
     <ClInclude Include="external\stb_vorbis.h" />
     <ClInclude Include="src\game\game.h" />
     <ClInclude Include="src\game\state.h" />
     <ClInclude Include="src\graphics\atlas.h" />
-    <ClInclude Include="src\graphics\shaderprogram.h" />
-    <ClInclude Include="src\graphics\tex2d.h" />
+    <ClInclude Include="src\graphics\image.h" />
+    <ClInclude Include="src\graphics\shader.h" />
+    <ClInclude Include="src\graphics\texture.h" />
     <ClInclude Include="src\input\keyboard.h" />
     <ClInclude Include="src\input\mouse.h" />
     <ClInclude Include="src\io\filesystem.h" />
     <ClInclude Include="src\memory\pointers.h" />
     <ClInclude Include="src\model\cubemesh.h" />
     <ClInclude Include="src\physics\aabb.h" />
-    <ClInclude Include="src\render\cam3d.h" />
+    <ClInclude Include="src\render\camera3d.h" />
     <ClInclude Include="src\render\frustum.h" />
-    <ClInclude Include="src\render\staterenderer.h" />
+    <ClInclude Include="src\render\window.h" />
     <ClInclude Include="src\sound\soundmanager.h" />
     <ClInclude Include="src\utility\col.h" />
     <ClInclude Include="src\utility\defines.h" />
     <ClInclude Include="src\utility\interpolate.h" />
     <ClInclude Include="src\utility\mat.h" />
+    <ClInclude Include="src\utility\matrixstack.h" />
     <ClInclude Include="src\utility\random.h" />
     <ClInclude Include="src\utility\stringtools.h" />
     <ClInclude Include="src\utility\timer.h" />
     <ClInclude Include="src\utility\vec.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="external\glad\src\glad.c" />
     <ClCompile Include="external\stb_vorbis.c" />
     <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\game\state.cpp" />
     <ClCompile Include="src\graphics\atlas.cpp" />
-    <ClCompile Include="src\graphics\shaderprogram.cpp" />
-    <ClCompile Include="src\graphics\tex2d.cpp" />
-    <ClCompile Include="src\input\keyboard.cpp" />
-    <ClCompile Include="src\input\mouse.cpp" />
+    <ClCompile Include="src\graphics\image.cpp" />
+    <ClCompile Include="src\graphics\shader.cpp" />
+    <ClCompile Include="src\graphics\texture.cpp" />
     <ClCompile Include="src\model\cubemesh.cpp" />
-    <ClCompile Include="src\render\cam3d.cpp" />
+    <ClCompile Include="src\render\camera3d.cpp" />
     <ClCompile Include="src\render\frustum.cpp" />
-    <ClCompile Include="src\render\staterenderer.cpp" />
+    <ClCompile Include="src\render\window.cpp" />
     <ClCompile Include="src\sound\soundmanager.cpp" />
+    <ClCompile Include="src\utility\matrixstack.cpp" />
     <ClCompile Include="src\utility\random.cpp" />
     <ClCompile Include="src\utility\timer.cpp" />
   </ItemGroup>

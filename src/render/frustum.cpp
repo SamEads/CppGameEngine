@@ -1,31 +1,5 @@
 #include "frustum.h"
 #include "../utility/mat.h"
-#include <rlgl.h>
-
-static Mat4<double> convertMat4(const Matrix& mat)
-{
-    Mat4<double> m { 0.0 };
-    m.m0 = mat.m0;
-    m.m1 = mat.m1;
-    m.m2 = mat.m2;
-    m.m3 = mat.m3;
-
-    m.m4 = mat.m4;
-    m.m5 = mat.m5;
-    m.m6 = mat.m6;
-    m.m7 = mat.m7;
-
-    m.m8 = mat.m8;
-    m.m9 = mat.m9;
-    m.m10 = mat.m10;
-    m.m11 = mat.m11;
-
-    m.m12 = mat.m12;
-    m.m13 = mat.m13;
-    m.m14 = mat.m14;
-    m.m15 = mat.m15;
-    return m;
-}
 
 static void normalizePlane(Vec4<double>& plane)
 {
@@ -38,9 +12,9 @@ static void normalizePlane(Vec4<double>& plane)
 }
 
 
-Frustum::Frustum(double x, double y, double z)
+Frustum::Frustum(const Mat4<double>& projection, const Mat4<double>& model, double x, double y, double z)
 {
-    extract(x, y, z);
+    extract(projection, model, x, y, z);
 }
 
 bool Frustum::aabbIn(const AABB& bb) const
@@ -62,21 +36,18 @@ bool Frustum::aabbIn(const AABB& bb) const
     return true;
 }
 
-void Frustum::extract(double x, double y, double z)
+void Frustum::extract(const Mat4<double>& projection, const Mat4<double>& model, double x, double y, double z)
 {
 #pragma region raylib compatibility
 
-    Mat4<double> projection = convertMat4(rlGetMatrixProjection());
-    Mat4<double> modelview = convertMat4(rlGetMatrixModelview());
-
 #pragma endregion
 
-    modelview = Mat4<double> {
+    auto modelview = Mat4<double> {
         1.0, 0.0, 0.0, -x,
         0.0, 1.0, 0.0, -y,
         0.0, 0.0, 1.0, -z,
         0.0, 0.0, 0.0, 1.0
-    } * modelview;
+    } *model;
 
     Mat4<double> planes = { 0.0 };
 

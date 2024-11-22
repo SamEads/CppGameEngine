@@ -1,6 +1,4 @@
 #include "game.h"
-#include <raylib.h>
-#include "../render/staterenderer.h"
 #include "state.h"
 #include "../input/keyboard.h"
 #include "../input/mouse.h"
@@ -71,10 +69,11 @@ print(tile_cobblestone.test_field)
 
     m_screenSize = { startWidth, startHeight };
 
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_ALWAYS_RUN);
-    SetTraceLogLevel(LOG_ERROR | LOG_INFO | LOG_WARNING);
+    // SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_ALWAYS_RUN);
+    // SetTraceLogLevel(LOG_ERROR | LOG_INFO | LOG_WARNING);
 
-    InitWindow(startWidth, startHeight, windowCaption.c_str());
+    m_window.open("Minecraft", m_screenSize.x, m_screenSize.y);
+    // InitWindow(startWidth, startHeight, windowCaption.c_str());
 
     m_soundManager = MakeScoped<SoundManager>();
 }
@@ -97,18 +96,23 @@ void Game::update()
 
 void Game::preDraw()
 {
-    BeginDrawing();
+    m_window.beginDrawing();
 
-    ClearBackground(WHITE);
+    m_window.clearBackground(230, 205, 255, 255);
 }
 
 void Game::postDraw()
 {
-    EndDrawing();
+    m_window.endDrawing();
 }
 
 void Game::draw()
 {
+    if (Keyboard::isPressed(Key::SPACE))
+    {
+        m_soundManager->playSoundFX("random.click", 1.0f, 1.0f);
+    }
+
     const std::lock_guard<std::mutex> lock(logicMutex);
     if (m_state)
     {
@@ -154,12 +158,12 @@ void Game::tick()
 void Game::setWindowSize(int width, int height)
 {
     m_screenSize = { width, height };
-    SetWindowSize(width, height);
+    m_window.setSize(width, height);
 }
 
 void Game::setWindowCaption(const std::string& caption)
 {
-    SetWindowTitle(caption.c_str());
+    m_window.setCaption(caption);
 }
 
 void Game::run()
@@ -173,7 +177,7 @@ void Game::run()
     m_running = true;
     tickThread = std::thread(&Game::tick, this);
 
-    while (!WindowShouldClose())
+    while (!m_window.shouldClose())
     {
         preUpdate();
         update();
@@ -186,7 +190,7 @@ void Game::run()
 
     tickThread.join();
 
-    CloseWindow();
+    m_window.close();
 }
 
 const Vec2<int> Game::getWindowSize() const
@@ -194,15 +198,20 @@ const Vec2<int> Game::getWindowSize() const
     return m_screenSize;
 }
 
+Window* Game::getWindow()
+{
+    return &m_window;
+}
+
 void Game::preUpdate()
 {
-    updateControllers();
+    //updateControllers();
 
-    updateMouse({ GetMouseDelta().x, GetMouseDelta().y });
+    //updateMouse({ GetMouseDelta().x, GetMouseDelta().y });
 
     m_soundManager->update();
 
-    Vec2<float> screenSize = { GetScreenWidth(), GetScreenHeight() };
+    Vec2<float> screenSize = { (float)m_window.getWidth(), (float)m_window.getHeight() };
 
     if (screenSize != m_screenSize)
     {

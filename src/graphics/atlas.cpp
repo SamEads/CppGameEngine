@@ -2,7 +2,7 @@
 #include <iostream>
 #include <regex>
 #include <map>
-#include <raylib.h>
+#include "image.h"
 
 bool Atlas::placeIcon(std::vector<std::vector<bool>>& atlas, Atlas::Icon& icon) const
 {
@@ -70,23 +70,21 @@ void Atlas::getIcons()
         auto it = files.find(icon.name);
         if (it != files.end())
         {
-            Image image = LoadImage(it->second.c_str());
-            icon.image = { image.data, { image.width, image.height }, image.format };
-            icon.size.x = icon.image.size.x;
-            icon.size.y = icon.image.size.y;
+            Image image(it->second.c_str());
+            icon.image.load(it->second.c_str());
 
             float sumR = 0.0f, sumG = 0.0f, sumB = 0.0f;
             int pixelCount = 0;
 
-            for (int y = 0; y < image.height; ++y)
+            for (int y = 0; y < image.getHeight(); ++y)
             {
-                for (int x = 0; x < image.width; ++x)
+                for (int x = 0; x < image.getWidth(); ++x)
                 {
-                    int index = (y * image.width + x) * 4;
-                    unsigned char r = ((unsigned char*)image.data)[index];
-                    unsigned char g = ((unsigned char*)image.data)[index + 1];
-                    unsigned char b = ((unsigned char*)image.data)[index + 2];
-                    unsigned char a = ((unsigned char*)image.data)[index + 3];
+                    int index = (y * image.getWidth() + x) * 4;
+                    unsigned char r = ((unsigned char*)image.getData())[index];
+                    unsigned char g = ((unsigned char*)image.getData())[index + 1];
+                    unsigned char b = ((unsigned char*)image.getData())[index + 2];
+                    unsigned char a = ((unsigned char*)image.getData())[index + 3];
 
                     if (a < 20) continue;
 
@@ -126,6 +124,7 @@ Atlas::Icon* Atlas::registerIcon(const std::string& name)
         {
             std::cout << "[WARNING] " << name << ".png does not exist" << std::endl;
         }
+        std::cout << "Asset didn't exist\n";
         m_icons[name] = { name + ".png" };
         m_iconsVec.push_back(&m_icons[name]);
         return &m_icons[name];
@@ -278,7 +277,7 @@ void Atlas::generateAtlas(bool matchHV)
         }
     }
 
-    Image img = GenImageColor(m_atlasWidth, m_atlasHeight, BLANK);
+    Image img(m_atlasWidth, m_atlasHeight, 0, 0, 0, 0);
 
     // Draw images to the atlas in their spot
     for (auto& pair : m_icons)
@@ -291,26 +290,20 @@ void Atlas::generateAtlas(bool matchHV)
             continue;
         }
 
-        Image imgCompat = { icon.image.data, icon.image.size.x, icon.image.size.y, 1, icon.image.format };
+        // Image imgCompat = { icon.image.data, icon.image.size.x, icon.image.size.y, 1, icon.image.format };
 
-        ImageDraw(&img, imgCompat,
-            { 0, 0, static_cast<float>(icon.size.x), static_cast<float>(icon.size.y) },
-            { static_cast<float>(icon.position.x), static_cast<float>(icon.position.y), static_cast<float>(icon.size.x), static_cast<float>(icon.size.y) },
-            WHITE);
+        img.draw(icon.image, 0, 0, icon.size.x, icon.size.y, icon.position.x, icon.position.y, icon.size.x, icon.size.y);
 
         icon.atlasSize.x = m_atlasWidth;
         icon.atlasSize.y = m_atlasHeight;
 
-        // Unload image data
-        UnloadImage(imgCompat);
-        icon.image = { 0 };
+        icon.image.unload();
     }
 
-    Texture t = LoadTextureFromImage(img);
-    m_texture.set(t.id, { t.width, t.height }, t.format);
+    m_texture.load(img);
     m_generated = true;
 
-    UnloadImage(img);
+    img.unload();
 
     std::cout << "[INFO] Texture atlas \"" << m_path.string() << "\" generated\n";
 }
@@ -321,8 +314,7 @@ void Atlas::regenerateAtlas()
     {
         auto& i = icon.second;
 
-        Image imgCompat = LoadImage(i.name.c_str());
-        i.image = { imgCompat.data, imgCompat.width, imgCompat.height, imgCompat.format };
+        i.image.load(i.name);
 
         i.position.x = i.position.y = i.size.x = i.size.y = 0;
     }
@@ -332,8 +324,10 @@ void Atlas::regenerateAtlas()
 
 void Atlas::exportImage(FileSystem::Path dest)
 {
+    /*
     Texture t = { m_texture.getId(), m_texture.getSize().x, m_texture.getSize().y, 1, m_texture.getFormat() };
     Image i = LoadImageFromTexture(t);
     ExportImage(i, dest.string().c_str());
     UnloadImage(i);
+    */
 }

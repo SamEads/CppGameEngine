@@ -4,7 +4,7 @@ class Game;
 
 class State
 {
-protected:
+private:
     Game* m_game;
 
 public:

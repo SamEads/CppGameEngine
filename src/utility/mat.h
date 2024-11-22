@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <ostream>
 
 template <typename T>
 struct Mat4

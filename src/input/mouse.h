@@ -1,19 +1,21 @@
 #pragma once
 
-#include "../utility/vec.h"
-
-void updateMouse(Vec2<float> mouseDelta);
+enum class MouseButton
+{
+	LEFT = 0,
+	RIGHT = 1,
+	MIDDLE = 2
+};
 
 namespace Mouse
 {
-    enum class Button
-    {
-        LEFT,
-        RIGHT,
-        MIDDLE
-    };
-    Vec2<float> getDelta();
-    bool isButtonPressed(Button button);
-    void enable();
-    void disable();
-}
+	bool isDown(MouseButton button);
+	bool isPressed(MouseButton button);
+	bool isReleased(MouseButton button);
+	double getX();
+	double getY();
+	int getXScroll();
+	int getYScroll();
+	double getXDelta();
+	double getYDelta();
+};

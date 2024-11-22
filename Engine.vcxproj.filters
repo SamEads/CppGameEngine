@@ -21,12 +21,6 @@
     <ClInclude Include="src\graphics\atlas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\shaderprogram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\tex2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\input\keyboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,9 +39,6 @@
     <ClInclude Include="src\game\game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\render\staterenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\sound\soundmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,7 +54,7 @@
     <ClInclude Include="external\stb_vorbis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\render\cam3d.h">
+    <ClInclude Include="src\render\camera3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\utility\mat.h">
@@ -78,9 +69,6 @@
     <ClInclude Include="src\input\mouse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="external\glad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\utility\stringtools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,27 +81,30 @@
     <ClInclude Include="src\physics\aabb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\render\window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utility\matrixstack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\graphics\atlas.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\shaderprogram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\tex2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\input\keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\utility\timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\game\game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\staterenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\sound\soundmanager.cpp">
@@ -125,19 +116,34 @@
     <ClCompile Include="external\stb_vorbis.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\render\cam3d.cpp">
+    <ClCompile Include="src\render\camera3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\model\cubemesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\input\mouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\game\state.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\render\frustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utility\matrixstack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

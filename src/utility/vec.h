@@ -31,28 +31,28 @@ struct Vec2
         return old;
     }
 
-    template <typename T>
-    bool operator==(const Vec2<T>& other) const
+    template <typename U>
+    bool operator==(const Vec2<U>& other) const
     {
         return x == other.x && y == other.y;
     }
 
-    template <typename T>
-    bool operator!=(const Vec2<T>& other) const
+    template <typename U>
+    bool operator!=(const Vec2<U>& other) const
     {
         return !(*this == other);
     }
 
-    template <typename T>
-    Vec2& operator+=(const Vec2<T>& other)
+    template <typename U>
+    Vec2& operator+=(const Vec2<U>& other)
     {
         x += other.x;
         y += other.y;
         return *this;
     }
 
-    template <typename T>
-    Vec2& operator-=(const Vec2<T>& other)
+    template <typename U>
+    Vec2& operator-=(const Vec2<U>& other)
     {
         x -= other.x;
         y -= other.y;

@@ -7,6 +7,7 @@
 #include "../sound/soundmanager.h"
 #include <thread>
 #include <mutex>
+#include "../render/window.h"
 
 class State;
 
@@ -17,9 +18,12 @@ protected:
 
     virtual void tick();
 
+    virtual void update();
+
     virtual void onScreenResize();
 
 private:
+    Window m_window;
     Timer m_timer;
 
     ScopedPtr<State> m_state;
@@ -41,8 +45,6 @@ private:
     void preDraw();
 
     void postDraw();
-
-    void update();
 
     void setState(ScopedPtr<State> state);
 
@@ -70,4 +72,6 @@ public:
     void run();
 
     const Vec2<int> getWindowSize() const;
+
+    Window* getWindow();
 };
