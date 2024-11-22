@@ -6,35 +6,16 @@
 int Shader::getLocation(const std::string& uniform)
 {
     auto it = m_map.find(uniform);
+ 
+    // Return existing shader locatoin
     if (it != m_map.end())
     {
-        return it->second;
+        return it->second.loc;
     }
-    return m_map[uniform] = glGetUniformLocation(m_programId, uniform.c_str());
-}
 
-void checkCompileErrors(GLuint shader, const std::string& type)
-{
-    GLint success;
-    GLchar infoLog[1024];
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-        std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
-    }
-}
-
-void checkLinkErrors(GLuint program)
-{
-    GLint success;
-    GLchar infoLog[1024];
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(program, 1024, NULL, infoLog);
-        std::cerr << "ERROR::PROGRAM_LINKING_ERROR\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
-    }
+    // Query and insert the uniform location
+    m_map[uniform] = { glGetUniformLocation(m_programId, uniform.c_str()) };
+    return m_map[uniform].loc;
 }
 
 Shader::Shader(const std::string& vert, const std::string& frag)
@@ -73,19 +54,16 @@ void Shader::load(const std::string& vert, const std::string& frag)
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vcstr, NULL);
     glCompileShader(vertexShader);
-    checkCompileErrors(vertexShader, "VERTEX");
 
     const char* fcstr = frag.c_str();
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fcstr, NULL);
     glCompileShader(fragmentShader);
-    checkCompileErrors(fragmentShader, "FRAGMENT");
 
     m_programId = glCreateProgram();
     glAttachShader(m_programId, vertexShader);
     glAttachShader(m_programId, fragmentShader);
     glLinkProgram(m_programId);
-    checkLinkErrors(m_programId);
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);

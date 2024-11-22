@@ -56,7 +56,7 @@ protected:
 		alSourcef(m_source, AL_MAX_DISTANCE, maxDistance);
 	}
 public:
-	Sound3D(std::string path, float x, float y, float z, float pitch, float maxDistance)
+	Sound3D(const std::string& path, float x, float y, float z, float pitch, float maxDistance)
 	{
 		auto it = soundBuffers.find(path);
 		if (it != soundBuffers.end())
@@ -109,7 +109,7 @@ protected:
 		alSourcei(m_source, AL_SOURCE_RELATIVE, AL_TRUE);
 	}
 public:
-	Sound2D(std::string path, float pitch, float maxDistance) : Sound3D(path, 0, 0, 0, pitch, maxDistance) {};
+	Sound2D(const std::string& path, float pitch, float maxDistance) : Sound3D(path, 0, 0, 0, pitch, maxDistance) {};
 };
 
 class SoundPool

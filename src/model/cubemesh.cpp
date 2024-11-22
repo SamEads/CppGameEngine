@@ -174,66 +174,61 @@ void CubeMesh::addBox(Vec3<float> min, Vec3<int> size, float extrusion)
 		min.x = temp;
 	}
 
-	std::array<float, 3> bottomFrontLeft{ min.x, min.y, min.z };
-	std::array<float, 3> bottomFrontRight{ max.x, min.y, min.z };
-	std::array<float, 3> topFrontRight{ max.x, max.y, min.z };
-	std::array<float, 3> topFrontLeft{ min.x, max.y, min.z };
-	std::array<float, 3> bottomBackLeft{ min.x, min.y, max.z };
-	std::array<float, 3> bottomBackRight{ max.x, min.y, max.z };
-	std::array<float, 3> topBackRight{ max.x, max.y, max.z };
-	std::array<float, 3> topBackLeft{ min.x, max.y, max.z };
+	std::array<float, 3> bottomFrontLeft { min.x, min.y, min.z };
+	std::array<float, 3> bottomFrontRight { max.x, min.y, min.z };
+	std::array<float, 3> topFrontRight { max.x, max.y, min.z };
+	std::array<float, 3> topFrontLeft { min.x, max.y, min.z };
+	std::array<float, 3> bottomBackLeft { min.x, min.y, max.z };
+	std::array<float, 3> bottomBackRight { max.x, min.y, max.z };
+	std::array<float, 3> topBackRight { max.x, max.y, max.z };
+	std::array<float, 3> topBackLeft { min.x, max.y, max.z };
 
-	std::array<std::array<float, 3>, 4> right{ bottomBackRight, bottomFrontRight, topFrontRight, topBackRight };
-	std::array<std::array<float, 3>, 4> left{ bottomFrontLeft, bottomBackLeft, topBackLeft, topFrontLeft };
-	std::array<std::array<float, 3>, 4> bottom{ bottomBackRight, bottomBackLeft, bottomFrontLeft, bottomFrontRight };
-	std::array<std::array<float, 3>, 4> top{ topFrontRight, topFrontLeft, topBackLeft, topBackRight };
-	std::array<std::array<float, 3>, 4> front{ bottomFrontRight, bottomFrontLeft, topFrontLeft, topFrontRight };
-	std::array<std::array<float, 3>, 4> back{ bottomBackLeft, bottomBackRight, topBackRight, topBackLeft };
+	std::array<std::array<float, 3>, 4> right { bottomBackRight, bottomFrontRight, topFrontRight, topBackRight };
+	std::array<std::array<float, 3>, 4> left { bottomFrontLeft, bottomBackLeft, topBackLeft, topFrontLeft };
+	std::array<std::array<float, 3>, 4> bottom { bottomBackRight, bottomBackLeft, bottomFrontLeft, bottomFrontRight };
+	std::array<std::array<float, 3>, 4> top { topFrontRight, topFrontLeft, topBackLeft, topBackRight };
+	std::array<std::array<float, 3>, 4> front { bottomFrontRight, bottomFrontLeft, topFrontLeft, topFrontRight };
+	std::array<std::array<float, 3>, 4> back { bottomBackLeft, bottomBackRight, topBackRight, topBackLeft };
 
-	std::array<float, 4> rightTexCoords{ m_texOffset.x + size.z + size.x, m_texOffset.y + size.z, m_texOffset.x + size.z + size.x + size.z, m_texOffset.y + size.z + size.y };
-	std::array<float, 4> leftTexCoords{ m_texOffset.x + 0, m_texOffset.y + size.z, m_texOffset.x + size.z, m_texOffset.y + size.z + size.y };
-	std::array<float, 4> bottomTexCoords{ m_texOffset.x + size.z, m_texOffset.y + 0, m_texOffset.x + size.z + size.x, m_texOffset.y + size.z };
-	std::array<float, 4> topTexCoords{ m_texOffset.x + size.z + size.x, m_texOffset.y + 0, m_texOffset.x + size.z + size.x + size.x, m_texOffset.y + size.z };
-	std::array<float, 4> frontTexCoords{ m_texOffset.x + size.z, m_texOffset.y + size.z, m_texOffset.x + size.z + size.x, m_texOffset.y + size.z + size.y };
-	std::array<float, 4> backTexCoords{ m_texOffset.x + size.z + size.x + size.z, m_texOffset.y + size.z, m_texOffset.x + size.z + size.x + size.z + size.x, m_texOffset.y + size.z + size.y };
+	std::array<float, 4> rightCoords { m_texOffset.x + size.z + size.x, m_texOffset.y + size.z, m_texOffset.x + size.z + size.x + size.z, m_texOffset.y + size.z + size.y };
+	std::array<float, 4> leftCoords { m_texOffset.x + 0, m_texOffset.y + size.z, m_texOffset.x + size.z, m_texOffset.y + size.z + size.y };
+	std::array<float, 4> bottomCoords { m_texOffset.x + size.z, m_texOffset.y + 0, m_texOffset.x + size.z + size.x, m_texOffset.y + size.z };
+	std::array<float, 4> topCoords { m_texOffset.x + size.z + size.x, m_texOffset.y + 0, m_texOffset.x + size.z + size.x + size.x, m_texOffset.y + size.z };
+	std::array<float, 4> frontCoords { m_texOffset.x + size.z, m_texOffset.y + size.z, m_texOffset.x + size.z + size.x, m_texOffset.y + size.z + size.y };
+	std::array<float, 4> backCoords { m_texOffset.x + size.z + size.x + size.z, m_texOffset.y + size.z, m_texOffset.x + size.z + size.x + size.z + size.x, m_texOffset.y + size.z + size.y };
 
-	// Helper function to add a face with UV coordinates
 	auto addFaceUV = [&](
 		const std::array<std::array<float, 3>, 4>& vertices,
-		const std::array<float, 4>& texCoords)
+		const std::array<float, 4>& coords)
 		{
 			float texelW = 0.1f / m_texSize.x;
 			float texelH = 0.1f / m_texSize.y;
 
-			m_vertices.push_back(Vertex{
+			m_vertices.push_back(Vertex {
 				vertices[0][0], vertices[0][1], vertices[0][2],
-				(texCoords[2] / m_texSize.x) - texelW, (texCoords[1] / m_texSize.y) + texelH,
-				0, 0, 0
-				});
-			m_vertices.push_back(Vertex{
+				(coords[2] / m_texSize.x) - texelW, (coords[1] / m_texSize.y) + texelH,
+			});
+			m_vertices.push_back(Vertex {
 				vertices[1][0], vertices[1][1], vertices[1][2],
-				(texCoords[0] / m_texSize.x) + texelW, (texCoords[1] / m_texSize.y) + texelH,
-				0, 0, 0
-				});
-			m_vertices.push_back(Vertex{
+				(coords[0] / m_texSize.x) + texelW, (coords[1] / m_texSize.y) + texelH,
+			});
+			m_vertices.push_back(Vertex {
 				vertices[2][0], vertices[2][1], vertices[2][2],
-				(texCoords[0] / m_texSize.x) + texelW, (texCoords[3] / m_texSize.y) - texelH,
-				0, 0, 0
-				});
-			m_vertices.push_back(Vertex{
+				(coords[0] / m_texSize.x) + texelW, (coords[3] / m_texSize.y) - texelH,
+			});
+			m_vertices.push_back(Vertex {
 				vertices[3][0], vertices[3][1], vertices[3][2],
-				(texCoords[2] / m_texSize.x) - texelW, (texCoords[3] / m_texSize.y) - texelH,
-				0, 0, 0
-				});
+				(coords[2] / m_texSize.x) - texelW, (coords[3] / m_texSize.y) - texelH,
+			});
 		};
 
 	// Add faces with UV coordinates
-	addFaceUV(right, rightTexCoords);
-	addFaceUV(left, leftTexCoords);
-	addFaceUV(bottom, bottomTexCoords);
-	addFaceUV(top, topTexCoords);
-	addFaceUV(front, frontTexCoords);
-	addFaceUV(back, backTexCoords);
+	addFaceUV(right, rightCoords);
+	addFaceUV(left, leftCoords);
+	addFaceUV(bottom, bottomCoords);
+	addFaceUV(top, topCoords);
+	addFaceUV(front, frontCoords);
+	addFaceUV(back, backCoords);
 
 	if (m_mirrored)
 	{

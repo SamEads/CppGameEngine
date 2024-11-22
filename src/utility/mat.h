@@ -2,6 +2,7 @@
 
 #include <array>
 #include <ostream>
+#include <mat4x4.hpp>
 
 template <typename T>
 struct Mat4

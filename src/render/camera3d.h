@@ -50,11 +50,11 @@ public:
 
 	void clearDepthBuffer();
 
-	const glm::mat4& getView();
+	const glm::mat4& getView() const;
 
 	MatrixStack* getModelStack();
 
-	const glm::mat4& getProjection();
+	const glm::mat4& getProjection() const;
 
-	const glm::mat4& getModel();
+	const glm::mat4& getModel() const;
 };

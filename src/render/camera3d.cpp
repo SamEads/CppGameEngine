@@ -166,12 +166,12 @@ void Camera3D::clearDepthBuffer()
 
 }
 
-const glm::mat4& Camera3D::getView()
+const glm::mat4& Camera3D::getView() const
 {
     return m_viewM;
 }
 
-const glm::mat4& Camera3D::getProjection()
+const glm::mat4& Camera3D::getProjection() const
 {
     return m_projM;
 }
@@ -182,7 +182,7 @@ MatrixStack* Camera3D::getModelStack()
 }
 
 
-const glm::mat4& Camera3D::getModel()
+const glm::mat4& Camera3D::getModel() const
 {
     return m_modelM.top();
 }

@@ -8,7 +8,12 @@ class Shader
 private:
     unsigned int m_programId;
 
-    std::unordered_map<std::string, int> m_map;
+    struct ShaderData
+    {
+        int loc;
+    };
+
+    std::unordered_map<std::string, ShaderData> m_map;
 
     int getLocation(const std::string& uniform);
 
