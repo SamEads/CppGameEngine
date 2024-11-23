@@ -10,9 +10,6 @@ class Window;
 class Camera3D
 {
 private:
-	Vec3<float> m_position;
-	Vec3<float> m_target;
-	Vec3<float> m_up;
 	float m_fov;
 	int m_proj;
 	int m_matrixPushes;
@@ -34,8 +31,6 @@ public:
 
 	void setFOV(float fov);
 
-	Vec3<float> getDirection() const;
-	
 	void pushMatrix();
 
 	void popMatrix();
@@ -47,8 +42,6 @@ public:
 	void translate(float x, float y, float z);
 
 	void scale(float x, float y, float z);
-
-	void clearDepthBuffer();
 
 	const glm::mat4& getView() const;
 

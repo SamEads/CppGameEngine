@@ -149,6 +149,7 @@
     <ClInclude Include="src\memory\pointers.h" />
     <ClInclude Include="src\model\cubemesh.h" />
     <ClInclude Include="src\physics\aabb.h" />
+    <ClInclude Include="src\graphics\bufferbuilder.h" />
     <ClInclude Include="src\render\camera3d.h" />
     <ClInclude Include="src\render\frustum.h" />
     <ClInclude Include="src\render\window.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\game\state.cpp" />
     <ClCompile Include="src\graphics\atlas.cpp" />
+    <ClCompile Include="src\graphics\bufferbuilder.cpp" />
     <ClCompile Include="src\graphics\image.cpp" />
     <ClCompile Include="src\graphics\shader.cpp" />
     <ClCompile Include="src\graphics\texture.cpp" />

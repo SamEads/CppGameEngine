@@ -27,6 +27,8 @@ public:
 
     void clearBackground(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
+    void clearDepthBuffer();
+
     void endDrawing();
 
     bool shouldClose() const;

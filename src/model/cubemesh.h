@@ -9,48 +9,65 @@
 class MatrixStack;
 class Shader;
 
-class CubeMesh
+class MeshBase
 {
-public:
+protected:
+	unsigned int m_VBO, m_VAO, m_EBO;
+	bool m_loaded = false;
+
+	void unload();
+
+	std::vector<unsigned int> m_indices;
+
+	virtual ~MeshBase();
+
+	void drawElements(const Texture& texture);
+};
+
+class Mesh : public MeshBase
+{
+protected:
 	struct Vertex
 	{
 		float x, y, z;
 		float u, v;
 		float normX, normY, normZ;
+		Vertex(float x, float y, float z, float u, float v) :
+			x(x), y(y), z(z), u(u), v(v), normX(0.0f), normY(0.0f), normZ(0.0f) {}
+		Vertex(float x, float y, float z, float u, float v, float normX, float normY, float normZ) :
+			x(x), y(y), z(z), u(u), v(v), normX(normX), normY(normY), normZ(normZ) {}
 	};
-private:
-	unsigned int m_VBO, m_VAO, m_EBO;
-
-	/*
-	struct Face
-	{
-		Vertex vertices[4];
-	};
-	*/
 
 	std::vector<Vertex> m_vertices;
-	std::vector<unsigned int> m_indices;
 
-	Vec2<int> m_texSize{ 0 };
-	Vec2<int> m_texOffset{ 0 };
+	void calculateNormals();
+
+	void calculateIndices();
+
+	void vertexUV(float x, float y, float z, float u, float v);
+
+	void vertexUVNormal(float x, float y, float z, float u, float v, float nx, float ny, float nz);
+
+	virtual ~Mesh() override = default;
+};
+
+class CubeMesh : public Mesh
+{
+private:
+	Vec2<int> m_texSize { 0 };
+	Vec2<int> m_texOffset { 0 };
 
 	bool m_compiled = false;
 
 	bool m_mirrored = false;
 
-	// void addFace(Face face, int u1, int v1, int u2, int v2);
-
 	void flipFaces();
-
-	void unload() const;
-
-	// static Vec3<float> calculateNormal(const CubeMesh::Face& face);
 
 public:
 	CubeMesh() = default;
 
-	Vec3<float> rotationPoint{ 0 };
-	Vec3<float> rotationAngle{ 0 };
+	Vec3<float> rotationPoint { 0 };
+	Vec3<float> rotationAngle { 0 };
 
 	void init(Vec2<int> texSize, Vec2<int> texOffset, bool mirrored = false);
 
@@ -66,6 +83,4 @@ public:
 	CubeMesh(const CubeMesh& other) = delete;
 
 	CubeMesh& operator=(const CubeMesh& other) = delete;
-
-	~CubeMesh();
 };

@@ -4,6 +4,7 @@
 #include "../graphics/texture.h"
 #include <glad/glad.h>
 #include "../utility/defines.h"
+#include "../graphics/bufferbuilder.h"
 
 void CubeMesh::flipFaces()
 {
@@ -45,20 +46,6 @@ void CubeMesh::upload(float scale)
 
 	std::cout << "Indices count: " << m_indices.size() << "\n";
 
-	glGenVertexArrays(1, &m_VAO);
-	checkGLErr("glGenVertexArrays");
-	glGenBuffers(1, &m_VBO);
-	checkGLErr("glGenBuffers VBO");
-	glGenBuffers(1, &m_EBO);
-	checkGLErr("glGenBuffers EBO");
-
-	glBindVertexArray(m_VAO);
-	checkGLErr("glBindVertexArray");
-
-	// Vertex buffer
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	checkGLErr("glBindBuffer GL_ARRAY_BUFFER");
-
 	// Apply scaling
 	for (auto& v : m_vertices)
 	{
@@ -67,73 +54,23 @@ void CubeMesh::upload(float scale)
 		v.z *= scale;
 	}
 
-	// Calculate normals
-	for (int i = 0; i < m_vertices.size(); i += 4)
-	{
-		std::vector<Vertex> face = std::vector<Vertex>(m_vertices.begin() + i, m_vertices.begin() + i + 4);
+	// Calculate normals & indices
+	calculateNormals();
+	calculateIndices();
 
-		Vec3<float> v1 = { face[1].x - face[0].x, face[1].y - face[0].y, face[1].z - face[0].z };
-		Vec3<float> v2 = { face[3].x - face[0].x, face[3].y - face[0].y, face[3].z - face[0].z };
-		auto normal = v1.cross(v2).normalize();
+	BufferBuilder builder;
 
-		for (auto& v : face)
-		{
-			v.normX = normal.x;
-			v.normY = normal.y;
-			v.normZ = normal.z;
-		}
-	}
+	builder.setVertexData<Vertex>(m_vertices)
+		.setIndices(m_indices)
+		.addAttribute(0, 3, GL_FLOAT, false, offsetof(Vertex, x))  // Position
+		.addAttribute(1, 2, GL_FLOAT, false, offsetof(Vertex, u))  // UV coords
+		.build();
 
-	// Calculate indices
-	static const int indicesMap[6] = {
-		0, 1, 2,
-		0, 2, 3
-	};
-	for (int i = 0; i < m_indices.size(); i++)
-	{
-		m_indices[i] = ((i / 6) * 4) + indicesMap[i % 6];
-	}
-
-	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), m_vertices.data(), GL_STATIC_DRAW);
-	checkGLErr("glBufferData GL_ARRAY_BUFFER");
-
-	// Position (X, Y, Z)
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, x));
-	checkGLErr("glVertexAttribPointer XYZ");
-	glEnableVertexAttribArray(0);
-	checkGLErr("glEnableVertexAttribArray XYZ");
-
-	// Color (R, G, B, A)
-	/*
-	glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, true, sizeof(Vertex), (void*)offsetof(Vertex, r));
-	checkGLErr("glVertexAttribPointer RGBA");
-	glEnableVertexAttribArray(1);
-	checkGLErr("glEnableVertexAttribArray RGBA");
-	*/
-
-	// Texture Coordinates (U, V)
-	glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, u));
-	checkGLErr("glVertexAttribPointer UV");
-	glEnableVertexAttribArray(2);
-	checkGLErr("glEnableVertexAttribArray UV");
-
-	// Index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	checkGLErr("glBindBuffer GL_ELEMENT_ARRAY_BUFFER (EBO)");
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), m_indices.data(), GL_STATIC_DRAW);
-	checkGLErr("glBufferData GL_ELEMENT_ARRAY_BUFFER (indices)");
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	m_VAO = builder.getVAO();
+	m_VBO = builder.getVBO();
+	m_EBO = builder.getIBO();
 
 	m_compiled = true;
-}
-
-void CubeMesh::unload() const
-{
-	glDeleteVertexArrays(1, &m_VAO);
-	glDeleteBuffers(1, &m_VBO);
-	glDeleteBuffers(1, &m_EBO);
 }
 
 void CubeMesh::init(Vec2<int> texSize, Vec2<int> texOffset, bool mirrored)
@@ -153,7 +90,8 @@ void CubeMesh::setRotationPoint(const Vec3<float>& point)
 
 void CubeMesh::addBox(Vec3<float> min, Vec3<int> size, float extrusion)
 {
-	Vec3<float> max = {
+	Vec3<float> max =
+	{
 		min.x + static_cast<float>(size.x),
 		min.y + static_cast<float>(size.y),
 		min.z + static_cast<float>(size.z)
@@ -183,52 +121,87 @@ void CubeMesh::addBox(Vec3<float> min, Vec3<int> size, float extrusion)
 	std::array<float, 3> topBackRight { max.x, max.y, max.z };
 	std::array<float, 3> topBackLeft { min.x, max.y, max.z };
 
-	std::array<std::array<float, 3>, 4> right { bottomBackRight, bottomFrontRight, topFrontRight, topBackRight };
-	std::array<std::array<float, 3>, 4> left { bottomFrontLeft, bottomBackLeft, topBackLeft, topFrontLeft };
-	std::array<std::array<float, 3>, 4> bottom { bottomBackRight, bottomBackLeft, bottomFrontLeft, bottomFrontRight };
-	std::array<std::array<float, 3>, 4> top { topFrontRight, topFrontLeft, topBackLeft, topBackRight };
-	std::array<std::array<float, 3>, 4> front { bottomFrontRight, bottomFrontLeft, topFrontLeft, topFrontRight };
-	std::array<std::array<float, 3>, 4> back { bottomBackLeft, bottomBackRight, topBackRight, topBackLeft };
+	using FaceVertices = const std::array<std::array<float, 3>, 4>;
+	using FaceCoords = const std::array<float, 4>;
 
-	std::array<float, 4> rightCoords { m_texOffset.x + size.z + size.x, m_texOffset.y + size.z, m_texOffset.x + size.z + size.x + size.z, m_texOffset.y + size.z + size.y };
-	std::array<float, 4> leftCoords { m_texOffset.x + 0, m_texOffset.y + size.z, m_texOffset.x + size.z, m_texOffset.y + size.z + size.y };
-	std::array<float, 4> bottomCoords { m_texOffset.x + size.z, m_texOffset.y + 0, m_texOffset.x + size.z + size.x, m_texOffset.y + size.z };
-	std::array<float, 4> topCoords { m_texOffset.x + size.z + size.x, m_texOffset.y + 0, m_texOffset.x + size.z + size.x + size.x, m_texOffset.y + size.z };
-	std::array<float, 4> frontCoords { m_texOffset.x + size.z, m_texOffset.y + size.z, m_texOffset.x + size.z + size.x, m_texOffset.y + size.z + size.y };
-	std::array<float, 4> backCoords { m_texOffset.x + size.z + size.x + size.z, m_texOffset.y + size.z, m_texOffset.x + size.z + size.x + size.z + size.x, m_texOffset.y + size.z + size.y };
+	FaceVertices right { bottomBackRight, bottomFrontRight, topFrontRight, topBackRight };
+	FaceVertices left { bottomFrontLeft, bottomBackLeft, topBackLeft, topFrontLeft };
+	FaceVertices bottom { bottomBackRight, bottomBackLeft, bottomFrontLeft, bottomFrontRight };
+	FaceVertices top { topFrontRight, topFrontLeft, topBackLeft, topBackRight };
+	FaceVertices front { bottomFrontRight, bottomFrontLeft, topFrontLeft, topFrontRight };
+	FaceVertices back { bottomBackLeft, bottomBackRight, topBackRight, topBackLeft };
 
-	auto addFaceUV = [&](
-		const std::array<std::array<float, 3>, 4>& vertices,
-		const std::array<float, 4>& coords)
-		{
-			float texelW = 0.1f / m_texSize.x;
-			float texelH = 0.1f / m_texSize.y;
+	// Wrap coordinates in this pattern:
+	//	[ TB ] (blank, top, bottom, blank)
+	//	[RFLB] (right, front, left, back)
 
-			m_vertices.push_back(Vertex {
-				vertices[0][0], vertices[0][1], vertices[0][2],
-				(coords[2] / m_texSize.x) - texelW, (coords[1] / m_texSize.y) + texelH,
-			});
-			m_vertices.push_back(Vertex {
-				vertices[1][0], vertices[1][1], vertices[1][2],
-				(coords[0] / m_texSize.x) + texelW, (coords[1] / m_texSize.y) + texelH,
-			});
-			m_vertices.push_back(Vertex {
-				vertices[2][0], vertices[2][1], vertices[2][2],
-				(coords[0] / m_texSize.x) + texelW, (coords[3] / m_texSize.y) - texelH,
-			});
-			m_vertices.push_back(Vertex {
-				vertices[3][0], vertices[3][1], vertices[3][2],
-				(coords[2] / m_texSize.x) - texelW, (coords[3] / m_texSize.y) - texelH,
-			});
-		};
+	FaceCoords rightCoords
+	{
+		m_texOffset.x + size.z + size.x, m_texOffset.y + size.z,
+		m_texOffset.x + size.z + size.x + size.z, m_texOffset.y + size.z + size.y
+	};
+	FaceCoords leftCoords
+	{
+		m_texOffset.x, m_texOffset.y + size.z,
+		m_texOffset.x + size.z, m_texOffset.y + size.z + size.y
+	};
+	FaceCoords bottomCoords
+	{
+		m_texOffset.x + size.z, m_texOffset.y,
+		m_texOffset.x + size.z + size.x, m_texOffset.y + size.z
+	};
+	FaceCoords topCoords
+	{
+		m_texOffset.x + size.z + size.x, m_texOffset.y,
+		m_texOffset.x + size.z + size.x + size.x, m_texOffset.y + size.z
+	};
+	FaceCoords frontCoords
+	{
+		m_texOffset.x + size.z, m_texOffset.y + size.z,
+		m_texOffset.x + size.z + size.x, m_texOffset.y + size.z + size.y
+	};
+	FaceCoords backCoords
+	{
+		m_texOffset.x + size.z + size.x + size.z, m_texOffset.y + size.z,
+		m_texOffset.x + size.z + size.x + size.z + size.x, m_texOffset.y + size.z + size.y
+	};
+
+	auto faceUV = [&](FaceVertices& vertices, FaceCoords& coords)
+	{
+		float texelW = 0.1f / m_texSize.x;
+		float texelH = 0.1f / m_texSize.y;
+			
+		vertexUV(vertices[0][0], vertices[0][1], vertices[0][2], (coords[2] / m_texSize.x) - texelW, (coords[1] / m_texSize.y) + texelH);
+		vertexUV(vertices[1][0], vertices[1][1], vertices[1][2], (coords[0] / m_texSize.x) + texelW, (coords[1] / m_texSize.y) + texelH);
+		vertexUV(vertices[2][0], vertices[2][1], vertices[2][2], (coords[0] / m_texSize.x) + texelW, (coords[3] / m_texSize.y) - texelH);
+		vertexUV(vertices[3][0], vertices[3][1], vertices[3][2], (coords[2] / m_texSize.x) - texelW, (coords[3] / m_texSize.y) - texelH);
+	};
 
 	// Add faces with UV coordinates
-	addFaceUV(right, rightCoords);
-	addFaceUV(left, leftCoords);
-	addFaceUV(bottom, bottomCoords);
-	addFaceUV(top, topCoords);
-	addFaceUV(front, frontCoords);
-	addFaceUV(back, backCoords);
+	// right
+	{
+		faceUV(right, rightCoords);
+	}
+	// left
+	{
+		faceUV(left, leftCoords);
+	}
+	// bottom
+	{
+		faceUV(bottom, bottomCoords);
+	}
+	// top
+	{
+		faceUV(top, topCoords);
+	}
+	// front
+	{
+		faceUV(front, frontCoords);
+	}
+	// back
+	{
+		faceUV(back, backCoords);
+	}
 
 	if (m_mirrored)
 	{
@@ -249,15 +222,15 @@ void CubeMesh::render(MatrixStack* matrix, Shader* shader, Texture* texture, flo
 
 	if (rotationAngle.z != 0.f)
 	{
-		matrix->rotate(rotationAngle.z * 180.0f / PI, 0.0f, 0.0f, 1.0f);
+		matrix->rotate(RAD2DEG(rotationAngle.x), 0.0f, 0.0f, 1.0f);
 	}
 	if (rotationAngle.y != 0.f)
 	{
-		matrix->rotate(rotationAngle.y * 180.0f / PI, 0.0f, 1.0f, 0.0f);
+		matrix->rotate(RAD2DEG(rotationAngle.y), 0.0f, 1.0f, 0.0f);
 	}
 	if (rotationAngle.x != 0.f)
 	{
-		matrix->rotate(rotationAngle.x * 180.0f / PI, 1.0f, 0.0f, 0.0f);
+		matrix->rotate(RAD2DEG(rotationAngle.z), 1.0f, 0.0f, 0.0f);
 	}
 
 	shader->setMat4("model", false, matrix->top());
@@ -287,7 +260,71 @@ void CubeMesh::render(MatrixStack* matrix, Shader* shader, float scale)
 	render(matrix, shader, nullptr, scale);
 }
 
-CubeMesh::~CubeMesh()
+void Mesh::calculateNormals()
+{
+	for (int i = 0; i < m_vertices.size(); i += 4)
+	{
+		std::vector<Vertex> face = std::vector<Vertex>(m_vertices.begin() + i, m_vertices.begin() + i + 4);
+
+		Vec3<float> v1 = { face[1].x - face[0].x, face[1].y - face[0].y, face[1].z - face[0].z };
+		Vec3<float> v2 = { face[3].x - face[0].x, face[3].y - face[0].y, face[3].z - face[0].z };
+		auto normal = v1.cross(v2).normalize();
+
+		for (auto& v : face)
+		{
+			v.normX = normal.x;
+			v.normY = normal.y;
+			v.normZ = normal.z;
+		}
+	}
+}
+
+void Mesh::calculateIndices()
+{
+	m_indices.resize((m_vertices.size() / 4) * 6);
+
+	static const int indicesMap[6] = {
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	for (int i = 0; i < m_indices.size(); i++)
+	{
+		m_indices[i] = ((i / 6) * 4) + indicesMap[i % 6];
+	}
+}
+
+void Mesh::vertexUV(float x, float y, float z, float u, float v)
+{
+	m_vertices.emplace_back(x, y, z, u, v);
+}
+
+void Mesh::vertexUVNormal(float x, float y, float z, float u, float v, float nx, float ny, float nz)
+{
+	m_vertices.emplace_back(x, y, z, u, v);
+}
+
+void MeshBase::unload()
+{
+	if (m_loaded)
+	{
+		glDeleteVertexArrays(1, &m_VAO);
+		glDeleteBuffers(1, &m_VBO);
+		glDeleteBuffers(1, &m_EBO);
+		m_loaded = false;
+	}
+}
+
+MeshBase::~MeshBase()
 {
 	unload();
+}
+
+void MeshBase::drawElements(const Texture& texture)
+{
+	glBindVertexArray(m_VAO);
+	texture.bind(0);
+	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+	texture.unbind();
+	glBindVertexArray(0);
 }

@@ -98,7 +98,7 @@ void Game::preDraw()
 {
     m_window.beginDrawing();
 
-    m_window.clearBackground(230, 205, 255, 255);
+    m_window.clearBackground(60, 140, 255, 255);
 }
 
 void Game::postDraw()

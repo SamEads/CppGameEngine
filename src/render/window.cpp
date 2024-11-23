@@ -257,6 +257,11 @@ void Window::clearBackground(unsigned char r, unsigned char g, unsigned char b, 
     glClearColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 }
 
+void Window::clearDepthBuffer()
+{
+    glClear(GL_DEPTH_BUFFER_BIT);
+}
+
 void Window::endDrawing()
 {
     for (int i = 0; i < KeyboardState::current.size(); ++i) { KeyboardState::previous[i] = KeyboardState::current[i]; }

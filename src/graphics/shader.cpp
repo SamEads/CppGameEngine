@@ -48,17 +48,33 @@ void Shader::unbind() const
     glUseProgram(0);
 }
 
+void checkCompileErrors(GLuint shader, const std::string& type)
+{
+    GLint success;
+    GLchar infoLog[1024];
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+        std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+    }
+}
+
 void Shader::load(const std::string& vert, const std::string& frag)
 {
+    std::cout << "Loading shader\n";
+
     const char* vcstr = vert.c_str();
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vcstr, NULL);
     glCompileShader(vertexShader);
+    checkCompileErrors(vertexShader, "VERTEX");
 
     const char* fcstr = frag.c_str();
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fcstr, NULL);
     glCompileShader(fragmentShader);
+    checkCompileErrors(fragmentShader, "FRAGMENT");
 
     m_programId = glCreateProgram();
     glAttachShader(m_programId, vertexShader);
