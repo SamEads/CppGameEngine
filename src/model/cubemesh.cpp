@@ -40,11 +40,7 @@ void CubeMesh::upload(float scale)
 
 	size_t faceCount = m_vertices.size() / 4;
 
-	std::cout << "Face count: " << faceCount << "\n";
-
 	m_indices.resize(faceCount * 6);
-
-	std::cout << "Indices count: " << m_indices.size() << "\n";
 
 	// Apply scaling
 	for (auto& v : m_vertices)
@@ -322,9 +318,22 @@ MeshBase::~MeshBase()
 
 void MeshBase::drawElements(const Texture& texture)
 {
+	bool showWireframe = false;
+
 	glBindVertexArray(m_VAO);
 	texture.bind(0);
-	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+
+	if (showWireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	else
+	{
+		glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+	}
+
 	texture.unbind();
 	glBindVertexArray(0);
 }

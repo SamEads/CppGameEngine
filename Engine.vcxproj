@@ -158,6 +158,7 @@
     <ClInclude Include="src\utility\defines.h" />
     <ClInclude Include="src\utility\interpolate.h" />
     <ClInclude Include="src\utility\mat.h" />
+    <ClInclude Include="src\utility\mathtools.h" />
     <ClInclude Include="src\utility\matrixstack.h" />
     <ClInclude Include="src\utility\random.h" />
     <ClInclude Include="src\utility\stringtools.h" />

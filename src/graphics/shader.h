@@ -34,5 +34,7 @@ public:
 
     void load(const std::string& vert, const std::string& frag);
 
+    static Shader loadDefault();
+
     ~Shader();
 };

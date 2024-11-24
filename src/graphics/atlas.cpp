@@ -3,20 +3,21 @@
 #include <regex>
 #include <map>
 #include "image.h"
+#include <set>
+#include <glad/glad.h>
 
 bool Atlas::placeIcon(std::vector<std::vector<bool>>& atlas, Atlas::Icon& icon) const
 {
-    for (int y = 0; y <= m_atlasHeight - icon.size.y; ++y)
+    for (int y = 0; y <= m_atlasHeight - (icon.size.y + 2 * m_padding); ++y)
     {
-        for (int x = 0; x <= m_atlasWidth - icon.size.x; ++x)
+        for (int x = 0; x <= m_atlasWidth - (icon.size.x + 2 * m_padding); ++x)
         {
             bool foundFit = true;
 
-            for (int i = 0; foundFit && (i < icon.size.x); ++i)
+            for (int i = 0; foundFit && (i < icon.size.x + 2 * m_padding); ++i)
             {
-                for (int j = 0; foundFit && (j < icon.size.y); ++j)
+                for (int j = 0; foundFit && (j < icon.size.y + 2 * m_padding); ++j)
                 {
-                    // this is an overlap. it does not fit here!
                     if (atlas[y + j][x + i])
                     {
                         foundFit = false;
@@ -26,11 +27,12 @@ bool Atlas::placeIcon(std::vector<std::vector<bool>>& atlas, Atlas::Icon& icon) 
 
             if (foundFit)
             {
-                icon.position.x = x;
-                icon.position.y = y;
-                for (int i = 0; i < icon.size.x; ++i)
+                icon.position.x = x + m_padding;
+                icon.position.y = y + m_padding;
+
+                for (int i = 0; i < icon.size.x + 2 * m_padding; ++i)
                 {
-                    for (int j = 0; j < icon.size.y; ++j)
+                    for (int j = 0; j < icon.size.y + 2 * m_padding; ++j)
                     {
                         atlas[y + j][x + i] = true;
                     }
@@ -44,19 +46,27 @@ bool Atlas::placeIcon(std::vector<std::vector<bool>>& atlas, Atlas::Icon& icon) 
 
 void Atlas::getIcons()
 {
-    std::unordered_map<std::string, std::string> files;
+    // All files in path (recursive)
+    // { File Name (with .png), Path To File }
+    std::unordered_map<std::string, FileSystem::Path> files;
 
     for (const auto& entry : FileSystem::RecursiveDirectoryIterator(m_path))
     {
         if (entry.is_regular_file())
         {
-            std::string filePath = entry.path().string();
-            std::string fileName = entry.path().filename().string();
+            // Files list has already iterated upon this file
+            std::string fname = entry.path().filename().string();
+            FileSystem::Path fpath = entry.path();
 
-            if (files.find(fileName) == files.end())
+            // only allow for one of same name type.
+            // potentially need to look for fix since recursive
+            // also check inside of icons
+            if (files.find(fname) != files.end() &&
+                m_icons.find(fname) != m_icons.end())
             {
-                files.insert({ fileName, filePath });
+                continue;
             }
+            files.emplace(fname, fpath);
         }
     }
 
@@ -67,24 +77,26 @@ void Atlas::getIcons()
         {
             continue;
         }
+
         auto it = files.find(icon.name);
         if (it != files.end())
         {
-            Image image(it->second.c_str());
-            icon.image.load(it->second.c_str());
+            icon.image.load(it->second.string());
+            icon.size.x = icon.image.getWidth();
+            icon.size.y = icon.image.getHeight();
 
             float sumR = 0.0f, sumG = 0.0f, sumB = 0.0f;
             int pixelCount = 0;
 
-            for (int y = 0; y < image.getHeight(); ++y)
+            for (int y = 0; y < icon.image.getHeight(); ++y)
             {
-                for (int x = 0; x < image.getWidth(); ++x)
+                for (int x = 0; x < icon.image.getWidth(); ++x)
                 {
-                    int index = (y * image.getWidth() + x) * 4;
-                    unsigned char r = ((unsigned char*)image.getData())[index];
-                    unsigned char g = ((unsigned char*)image.getData())[index + 1];
-                    unsigned char b = ((unsigned char*)image.getData())[index + 2];
-                    unsigned char a = ((unsigned char*)image.getData())[index + 3];
+                    int index = (y * icon.image.getWidth() + x) * 4;
+                    unsigned char r = ((unsigned char*)icon.image.getData())[index];
+                    unsigned char g = ((unsigned char*)icon.image.getData())[index + 1];
+                    unsigned char b = ((unsigned char*)icon.image.getData())[index + 2];
+                    unsigned char a = ((unsigned char*)icon.image.getData())[index + 3];
 
                     if (a < 20) continue;
 
@@ -110,9 +122,14 @@ void Atlas::getIcons()
     }
 }
 
-Atlas::Atlas(FileSystem::Path path)
+Atlas::Atlas(FileSystem::Path path, int padding) :
+    m_path("assets/textures" / path),
+    m_padding(padding)
 {
-    m_path = "assets/textures" / path;
+    if (!FileSystem::exists(m_path))
+    {
+        std::cout << "[WARNING] Path " << m_path.string() << "does not exist!\n";
+    }
 }
 
 Atlas::Icon* Atlas::registerIcon(const std::string& name)
@@ -124,7 +141,6 @@ Atlas::Icon* Atlas::registerIcon(const std::string& name)
         {
             std::cout << "[WARNING] " << name << ".png does not exist" << std::endl;
         }
-        std::cout << "Asset didn't exist\n";
         m_icons[name] = { name + ".png" };
         m_iconsVec.push_back(&m_icons[name]);
         return &m_icons[name];
@@ -290,9 +306,7 @@ void Atlas::generateAtlas(bool matchHV)
             continue;
         }
 
-        // Image imgCompat = { icon.image.data, icon.image.size.x, icon.image.size.y, 1, icon.image.format };
-
-        img.draw(icon.image, 0, 0, icon.size.x, icon.size.y, icon.position.x, icon.position.y, icon.size.x, icon.size.y);
+        img.draw(icon.image, 0, 0, icon.size.x, icon.size.y, icon.position.x, icon.position.y, icon.size.x, icon.size.y, m_padding);
 
         icon.atlasSize.x = m_atlasWidth;
         icon.atlasSize.y = m_atlasHeight;
@@ -301,11 +315,8 @@ void Atlas::generateAtlas(bool matchHV)
     }
 
     m_texture.load(img);
+
     m_generated = true;
-
-    img.unload();
-
-    std::cout << "[INFO] Texture atlas \"" << m_path.string() << "\" generated\n";
 }
 
 void Atlas::regenerateAtlas()
@@ -324,10 +335,14 @@ void Atlas::regenerateAtlas()
 
 void Atlas::exportImage(FileSystem::Path dest)
 {
-    /*
-    Texture t = { m_texture.getId(), m_texture.getSize().x, m_texture.getSize().y, 1, m_texture.getFormat() };
-    Image i = LoadImageFromTexture(t);
-    ExportImage(i, dest.string().c_str());
-    UnloadImage(i);
-    */
+    // Bind texture (must be done to export image)
+    m_texture.bind(0);
+    
+    // Create image and save it to the provided destination. Inherits extension but expects a PNG.
+    // Maybe look into other file types and comp.
+    Image i(&m_texture);
+    i.save(dest);
+
+    // Set bound texture state back to none
+    m_texture.unbind();
 }

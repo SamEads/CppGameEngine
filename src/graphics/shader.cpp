@@ -56,14 +56,12 @@ void checkCompileErrors(GLuint shader, const std::string& type)
     if (!success)
     {
         glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-        std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+        std::cout << "[ERROR] Shader compilation error: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
     }
 }
 
 void Shader::load(const std::string& vert, const std::string& frag)
 {
-    std::cout << "Loading shader\n";
-
     const char* vcstr = vert.c_str();
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vcstr, NULL);
@@ -83,6 +81,11 @@ void Shader::load(const std::string& vert, const std::string& frag)
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+}
+
+Shader Shader::loadDefault()
+{
+    return Shader();
 }
 
 Shader::~Shader()

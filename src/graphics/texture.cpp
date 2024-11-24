@@ -37,8 +37,6 @@ void Texture::load(const std::string& path)
     // Get texture size from image
     m_xSize = image.getWidth(); m_ySize = image.getHeight();
 
-    std::cout << m_xSize << " " << m_ySize << "\n";
-
     // Generate the texture ID and store in ID
     glGenTextures(1, &m_id);
 
@@ -70,8 +68,6 @@ void Texture::load(const Image& image)
 
     // Get texture size from image
     m_xSize = image.getWidth(); m_ySize = image.getHeight();
-
-    std::cout << m_xSize << " " << m_ySize << "\n";
 
     // Generate the texture ID and store in ID
     glGenTextures(1, &m_id);

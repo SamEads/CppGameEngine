@@ -101,8 +101,10 @@ private:
 
     static bool compareHeight(const Icon* a, const Icon* b);
 
+    int m_padding = 0;
+
 public:
-    Atlas(FileSystem::Path path);
+    Atlas(FileSystem::Path path, int m_padding = 0);
 
     const FileSystem::Path& getPath() const { return m_path; }
 
