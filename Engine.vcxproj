@@ -135,6 +135,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="external\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="external\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="external\imgui\imconfig.h" />
+    <ClInclude Include="external\imgui\imgui.h" />
+    <ClInclude Include="external\imgui\imgui_internal.h" />
+    <ClInclude Include="external\imgui\imstb_rectpack.h" />
+    <ClInclude Include="external\imgui\imstb_textedit.h" />
+    <ClInclude Include="external\imgui\imstb_truetype.h" />
     <ClInclude Include="external\sol.hpp" />
     <ClInclude Include="external\stb_vorbis.h" />
     <ClInclude Include="src\game\game.h" />
@@ -167,6 +175,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="external\glad\src\glad.c" />
+    <ClCompile Include="external\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="external\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="external\imgui\imgui.cpp" />
+    <ClCompile Include="external\imgui\imgui_demo.cpp" />
+    <ClCompile Include="external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="external\imgui\imgui_tables.cpp" />
+    <ClCompile Include="external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="external\stb_vorbis.c" />
     <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\game\state.cpp" />

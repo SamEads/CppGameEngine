@@ -12,6 +12,8 @@ private:
 
     bool m_mouseActive = true;
 
+    bool m_debugWindow = false;
+
 public:
     Window() = default;
 
@@ -44,6 +46,10 @@ public:
     void enableMouse();
 
     bool isMouseEnabled() const;
+
+    void toggleDebugMenu();
+
+    const bool isDebugEnabled() const { return m_debugWindow; }
 
     std::string getCaption();
 

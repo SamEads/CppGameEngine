@@ -1,5 +1,6 @@
 #include "bufferbuilder.h"
 #include <glad/glad.h>
+#include <iostream>
 
 void BufferBuilder::bindBuffer(unsigned int target, unsigned int buffer)
 {

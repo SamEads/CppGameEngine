@@ -40,7 +40,9 @@ namespace FileSystem
     };
 
     using RecursiveDirectoryIterator = fs::recursive_directory_iterator;
+    using DirectoryIterator = fs::directory_iterator;
     using FileTimeType = fs::file_time_type;
+    using DirectoryEntry = fs::directory_entry;
 
     inline bool exists(const Path& p)
     {
@@ -100,6 +102,11 @@ namespace FileSystem
     inline std::string filename(const RecursiveDirectoryIterator& it)
     {
         return it->path().filename().string();
+    }
+
+    inline Path getCurrentPath()
+    {
+        return fs::current_path();
     }
 
     inline std::string extension(const RecursiveDirectoryIterator& it)

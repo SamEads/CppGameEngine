@@ -110,7 +110,7 @@ void Game::draw()
 {
     if (Keyboard::isPressed(Key::SPACE))
     {
-        m_soundManager->playSoundFX("random.click", 1.0f, 1.0f);
+        m_window.toggleDebugMenu();
     }
 
     const std::lock_guard<std::mutex> lock(logicMutex);
@@ -126,7 +126,7 @@ void Game::tick()
 
     while (m_running)
     {
-        if (m_state == nullptr)
+        if (m_state == nullptr || m_window.isDebugEnabled())
         {
             continue;
         }

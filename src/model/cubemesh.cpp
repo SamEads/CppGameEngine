@@ -318,21 +318,12 @@ MeshBase::~MeshBase()
 
 void MeshBase::drawElements(const Texture& texture)
 {
-	bool showWireframe = false;
+	//bool showWireframe = false;
 
 	glBindVertexArray(m_VAO);
 	texture.bind(0);
 
-	if (showWireframe)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	else
-	{
-		glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
-	}
+	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 
 	texture.unbind();
 	glBindVertexArray(0);
