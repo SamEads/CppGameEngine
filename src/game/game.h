@@ -23,6 +23,10 @@ protected:
     virtual void onScreenResize();
 
 private:
+    bool m_lockRes;
+    bool m_integerScaling;
+    Vec2<int> m_resolutionSize { 0 };
+
     Window m_window;
     Timer m_timer;
 
@@ -50,6 +54,22 @@ private:
 
 public:
     Game(const std::string& windowCaption, int tps, int startWidth, int startHeight);
+
+    void setRenderResolution(int w, int h)
+    {
+        m_lockRes = true;
+        m_resolutionSize = { 256, 224 };
+    }
+
+    void setIntegerScaling(bool state)
+    {
+        m_integerScaling = state;
+    }
+
+    void setLetterboxColor(const char r, const char g, const char b, const char a)
+    {
+
+    }
 
     template <typename StateType>
     Game& setState()

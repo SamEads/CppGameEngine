@@ -28,6 +28,8 @@ public:
 
     void setMat4(const std::string& uniform, bool transpose, const glm::mat4& mat);
 
+    void setVec2(const std::string& uniform, float a, float b);
+
     void bind() const;
 
     void unbind() const;

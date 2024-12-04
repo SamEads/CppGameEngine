@@ -156,6 +156,7 @@
     <ClInclude Include="src\io\filesystem.h" />
     <ClInclude Include="src\memory\pointers.h" />
     <ClInclude Include="src\model\cubemesh.h" />
+    <ClInclude Include="src\model\mesh.h" />
     <ClInclude Include="src\physics\aabb.h" />
     <ClInclude Include="src\graphics\bufferbuilder.h" />
     <ClInclude Include="src\render\camera3d.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="src\graphics\shader.cpp" />
     <ClCompile Include="src\graphics\texture.cpp" />
     <ClCompile Include="src\model\cubemesh.cpp" />
+    <ClCompile Include="src\model\mesh.cpp" />
     <ClCompile Include="src\render\camera3d.cpp" />
     <ClCompile Include="src\render\frustum.cpp" />
     <ClCompile Include="src\render\window.cpp" />

@@ -38,6 +38,11 @@ void Shader::setMat4(const std::string& uniform, bool transpose, const glm::mat4
     glUniformMatrix4fv(getLocation(uniform), 1, transpose, glm::value_ptr(mat));
 }
 
+void Shader::setVec2(const std::string& uniform, float a, float b)
+{
+    glUniform2f(getLocation(uniform), a, b);
+}
+
 void Shader::bind() const
 {
     glUseProgram(m_programId);

@@ -72,7 +72,7 @@ print(tile_cobblestone.test_field)
     // SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_ALWAYS_RUN);
     // SetTraceLogLevel(LOG_ERROR | LOG_INFO | LOG_WARNING);
 
-    m_window.open("Minecraft", m_screenSize.x, m_screenSize.y);
+    m_window.open(windowCaption, m_screenSize.x, m_screenSize.y);
     // InitWindow(startWidth, startHeight, windowCaption.c_str());
 
     m_soundManager = MakeScoped<SoundManager>();

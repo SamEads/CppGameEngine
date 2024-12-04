@@ -5,16 +5,19 @@
 #include <glad/glad.h>
 #include "../utility/defines.h"
 #include "../graphics/bufferbuilder.h"
+#include <array>
 
 void CubeMesh::flipFaces()
 {
 	int faces = m_vertices.size() / 4;
 	for (int i = 0; i < faces; ++i)
 	{
+		// Make a face copy so we can safely replace the original vector
 		std::vector<Vertex> faceCopy(
 			m_vertices.begin() + (i * 4),
 			m_vertices.begin() + (i * 4) + 4
 		);
+
 		m_vertices[(i * 4)] = faceCopy[3];
 		m_vertices[(i * 4) + 1] = faceCopy[2];
 		m_vertices[(i * 4) + 2] = faceCopy[1];
@@ -254,77 +257,4 @@ void CubeMesh::render(MatrixStack* matrix, Shader* shader, Texture* texture, flo
 void CubeMesh::render(MatrixStack* matrix, Shader* shader, float scale)
 {
 	render(matrix, shader, nullptr, scale);
-}
-
-void Mesh::calculateNormals()
-{
-	for (int i = 0; i < m_vertices.size(); i += 4)
-	{
-		std::vector<Vertex> face = std::vector<Vertex>(m_vertices.begin() + i, m_vertices.begin() + i + 4);
-
-		Vec3<float> v1 = { face[1].x - face[0].x, face[1].y - face[0].y, face[1].z - face[0].z };
-		Vec3<float> v2 = { face[3].x - face[0].x, face[3].y - face[0].y, face[3].z - face[0].z };
-		auto normal = v1.cross(v2).normalize();
-
-		for (auto& v : face)
-		{
-			v.normX = normal.x;
-			v.normY = normal.y;
-			v.normZ = normal.z;
-		}
-	}
-}
-
-void Mesh::calculateIndices()
-{
-	m_indices.resize((m_vertices.size() / 4) * 6);
-
-	static const int indicesMap[6] = {
-		0, 1, 2,
-		0, 2, 3
-	};
-
-	for (int i = 0; i < m_indices.size(); i++)
-	{
-		m_indices[i] = ((i / 6) * 4) + indicesMap[i % 6];
-	}
-}
-
-void Mesh::vertexUV(float x, float y, float z, float u, float v)
-{
-	m_vertices.emplace_back(x, y, z, u, v);
-}
-
-void Mesh::vertexUVNormal(float x, float y, float z, float u, float v, float nx, float ny, float nz)
-{
-	m_vertices.emplace_back(x, y, z, u, v);
-}
-
-void MeshBase::unload()
-{
-	if (m_loaded)
-	{
-		glDeleteVertexArrays(1, &m_VAO);
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteBuffers(1, &m_EBO);
-		m_loaded = false;
-	}
-}
-
-MeshBase::~MeshBase()
-{
-	unload();
-}
-
-void MeshBase::drawElements(const Texture& texture)
-{
-	//bool showWireframe = false;
-
-	glBindVertexArray(m_VAO);
-	texture.bind(0);
-
-	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
-
-	texture.unbind();
-	glBindVertexArray(0);
 }
